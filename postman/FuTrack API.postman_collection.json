@@ -1,0 +1,202 @@
+{
+  "info": {
+    "_postman_id": "bdcc9897-c0ea-40f8-90b7-0e7267fe8961",
+    "name": "FuTrack API",
+    "description": "CRUD and search requests for the FuTrack Spring Boot API. Set baseUrl to http://localhost:8080. Requests that create data save applicationId for later requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "applicationId",
+      "value": ""
+    },
+    {
+      "key": "query",
+      "value": "Postman"
+    },
+    {
+      "key": "status",
+      "value": "Applied"
+    },
+    {
+      "key": "type",
+      "value": "Full-time"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/health"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('API responds', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "List applications",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/applications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "applications"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"List succeeds\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response is an array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search and filter",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/applications?q={{query}}&status={{status}}&type={{type}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "applications"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "{{query}}"
+                },
+                {
+                  "key": "status",
+                  "value": "{{status}}"
+                },
+                {
+                  "key": "type",
+                  "value": "{{type}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": \"Postman Demo\",\n  \"title\": \"Software Engineer\",\n  \"location\": \"Remote\",\n  \"type\": \"Full-time\",\n  \"mode\": \"Remote\",\n  \"date\": \"2026-11-05\",\n  \"url\": \"https://example.com/jobs/123\",\n  \"recruiter\": \"Taylor Recruiter\",\n  \"email\": \"taylor@example.com\",\n  \"salary\": \"$100k-$130k\",\n  \"followUp\": \"2026-11-12\",\n  \"status\": \"Applied\",\n  \"description\": \"Example role for API testing\",\n  \"notes\": \"Created from Postman\"\n}"
+            },
+            "url": "{{baseUrl}}/api/applications"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Created', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('applicationId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get application by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/applications/{{applicationId}}"
+          }
+        },
+        {
+          "name": "Replace application",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": \"Postman Demo\",\n  \"title\": \"Senior Software Engineer\",\n  \"location\": \"Hybrid\",\n  \"type\": \"Full-time\",\n  \"mode\": \"Hybrid\",\n  \"date\": \"2026-11-05\",\n  \"status\": \"Interview\",\n  \"notes\": \"Updated from Postman\"\n}"
+            },
+            "url": "{{baseUrl}}/api/applications/{{applicationId}}"
+          }
+        },
+        {
+          "name": "Update status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"Offer\"}"
+            },
+            "url": "{{baseUrl}}/api/applications/{{applicationId}}/status"
+          }
+        },
+        {
+          "name": "Delete application",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/applications/{{applicationId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Deleted', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

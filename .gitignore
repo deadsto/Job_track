@@ -1,0 +1,8 @@
+backend/target/
+backend/.idea/
+.idea/
+*.log
+node_modules/
+Thumbs.db
+
+.vercel

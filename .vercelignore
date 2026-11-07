@@ -1,0 +1,6 @@
+.git
+.codex
+backend/
+postman/
+docker-compose.yml
+README.md
